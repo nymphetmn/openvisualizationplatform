@@ -30,9 +30,7 @@ namespace OpenVP.Manager.Metadata {
         }
         
         private void CreateTimeline() {
-            this.events.Sort(delegate(T a, T b) {
-                return a.Begin - b.Begin;
-            });
+            this.events.Sort((a, b) => a.Begin - b.Begin);
             
             int last = 0;
             

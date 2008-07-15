@@ -1,0 +1,4 @@
+2008-07-15  Chris Howie <cdhowie@gmail.com> 
+
+	* ChangeLog: May as well use a lambda expression.
+
