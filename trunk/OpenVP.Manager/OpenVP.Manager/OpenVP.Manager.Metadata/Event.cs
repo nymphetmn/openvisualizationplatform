@@ -6,6 +6,7 @@
 
 using System;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace OpenVP.Manager.Metadata {
     public class Event {
@@ -30,6 +31,10 @@ namespace OpenVP.Manager.Metadata {
             
             this.begin = begin;
             this.end = end;
+        }
+        
+        public Event(XElement e) : this((int) e.Attribute("begin"),
+                                        (int) e.Attribute("end")) {
         }
     }
 }
