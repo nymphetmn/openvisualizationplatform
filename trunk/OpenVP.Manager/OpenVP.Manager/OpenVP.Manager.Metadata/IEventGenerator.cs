@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 
 namespace OpenVP.Manager.Metadata {
-    public interface IEventGenerator<T> : IEnumerable<T> where T : Event {
+    public interface IEventGenerator : IEnumerable<Event> {
         GeneratorMode GeneratorMode { get; }
     }
     
