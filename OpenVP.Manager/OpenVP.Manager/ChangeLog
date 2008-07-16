@@ -1,3 +1,10 @@
+2008-07-16  Chris Howie <cdhowie@gmail.com> 
+
+	* OpenVP.Manager.Metadata/StaticChannel.cs: Implement hackish
+	  deserialization.
+	* OpenVP.Manager.Metadata/IEventGenerator.cs: Made non-generic since
+	  generic usage would require reflection.
+
 2008-07-15  Chris Howie <cdhowie@gmail.com> 
 
 	* ChangeLog: May as well use a lambda expression.
