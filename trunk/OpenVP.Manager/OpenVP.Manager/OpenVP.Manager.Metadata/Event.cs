@@ -10,17 +10,9 @@ using System.Xml.Linq;
 
 namespace OpenVP.Manager.Metadata {
     public class Event {
-        private int begin;
+        public int Begin { get; private set; }
         
-        public int Begin {
-            get { return this.begin; }
-        }
-        
-        private int end;
-        
-        public int End {
-            get { return this.end; }
-        }
+        public int End { get; private set; }
         
         public Event(int begin, int end) {
             if (begin < 0)
@@ -29,8 +21,8 @@ namespace OpenVP.Manager.Metadata {
             if (end < begin)
                 throw new ArgumentOutOfRangeException("end < begin");
             
-            this.begin = begin;
-            this.end = end;
+            this.Begin = begin;
+            this.End = end;
         }
         
         public Event(XElement e) : this((int) e.Attribute("begin"),
