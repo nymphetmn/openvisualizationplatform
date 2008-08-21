@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="OpenVP.GtkGui.KeyEntry" palette-category="OpenVP.GtkGui" allow-children="false" base-type="Gtk.Entry">
     <itemgroups>
       <itemgroup label="KeyEntry Properties">
