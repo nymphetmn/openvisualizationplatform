@@ -13,6 +13,8 @@ namespace OpenVP.GtkGui {
     
     public partial class MainWindow {
         
+        private Gtk.UIManager UIManager;
+        
         private Gtk.Action Preset;
         
         private Gtk.Action @new;
@@ -44,43 +46,43 @@ namespace OpenVP.GtkGui {
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget OpenVP.GtkGui.MainWindow
-            Gtk.UIManager w1 = new Gtk.UIManager();
-            Gtk.ActionGroup w2 = new Gtk.ActionGroup("Default");
+            this.UIManager = new Gtk.UIManager();
+            Gtk.ActionGroup w1 = new Gtk.ActionGroup("Default");
             this.Preset = new Gtk.Action("Preset", Mono.Unix.Catalog.GetString("_Preset"), null, null);
             this.Preset.ShortLabel = Mono.Unix.Catalog.GetString("_Preset");
-            w2.Add(this.Preset, null);
+            w1.Add(this.Preset, null);
             this.@new = new Gtk.Action("new", Mono.Unix.Catalog.GetString("_New"), null, "gtk-new");
             this.@new.ShortLabel = Mono.Unix.Catalog.GetString("_New");
-            w2.Add(this.@new, null);
+            w1.Add(this.@new, null);
             this.open = new Gtk.Action("open", Mono.Unix.Catalog.GetString("_Open"), null, "gtk-open");
             this.open.ShortLabel = Mono.Unix.Catalog.GetString("_Open");
-            w2.Add(this.open, null);
+            w1.Add(this.open, null);
             this.save = new Gtk.Action("save", Mono.Unix.Catalog.GetString("_Save"), null, "gtk-save");
             this.save.Sensitive = false;
             this.save.ShortLabel = Mono.Unix.Catalog.GetString("_Save");
-            w2.Add(this.save, null);
+            w1.Add(this.save, null);
             this.saveAs = new Gtk.Action("saveAs", Mono.Unix.Catalog.GetString("Save _As"), null, "gtk-save-as");
             this.saveAs.Sensitive = false;
             this.saveAs.ShortLabel = Mono.Unix.Catalog.GetString("Save _As");
-            w2.Add(this.saveAs, null);
+            w1.Add(this.saveAs, null);
             this.quit = new Gtk.Action("quit", Mono.Unix.Catalog.GetString("_Quit"), null, "gtk-quit");
             this.quit.ShortLabel = Mono.Unix.Catalog.GetString("_Quit");
-            w2.Add(this.quit, null);
+            w1.Add(this.quit, null);
             this.LinearPreset = new Gtk.Action("LinearPreset", Mono.Unix.Catalog.GetString("_Linear preset"), null, null);
             this.LinearPreset.ShortLabel = Mono.Unix.Catalog.GetString("_Linear preset");
-            w2.Add(this.LinearPreset, null);
+            w1.Add(this.LinearPreset, null);
             this.Options = new Gtk.Action("Options", Mono.Unix.Catalog.GetString("_Options"), null, null);
             this.Options.ShortLabel = Mono.Unix.Catalog.GetString("_Options");
-            w2.Add(this.Options, null);
+            w1.Add(this.Options, null);
             this.WaitForDataSliceToDraw = new Gtk.ToggleAction("WaitForDataSliceToDraw", Mono.Unix.Catalog.GetString("_Wait for data slice to draw"), null, null);
             this.WaitForDataSliceToDraw.Active = true;
             this.WaitForDataSliceToDraw.ShortLabel = Mono.Unix.Catalog.GetString("_Wait for data slice to draw");
-            w2.Add(this.WaitForDataSliceToDraw, null);
+            w1.Add(this.WaitForDataSliceToDraw, null);
             this.AllowSlicesToBeSkipped = new Gtk.ToggleAction("AllowSlicesToBeSkipped", Mono.Unix.Catalog.GetString("_Allow slices to be skipped"), null, null);
             this.AllowSlicesToBeSkipped.ShortLabel = Mono.Unix.Catalog.GetString("_Allow slices to be skipped");
-            w2.Add(this.AllowSlicesToBeSkipped, null);
-            w1.InsertActionGroup(w2, 0);
-            this.AddAccelGroup(w1.AccelGroup);
+            w1.Add(this.AllowSlicesToBeSkipped, null);
+            this.UIManager.InsertActionGroup(w1, 0);
+            this.AddAccelGroup(this.UIManager.AccelGroup);
             this.Name = "OpenVP.GtkGui.MainWindow";
             this.Title = Mono.Unix.Catalog.GetString("Open Visualization Platform");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
@@ -88,29 +90,29 @@ namespace OpenVP.GtkGui {
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             // Container child vbox1.Gtk.Box+BoxChild
-            w1.AddUiFromString("<ui><menubar name='menubar1'><menu action='Preset'><menu action='new'><menuitem action='LinearPreset'/></menu><menuitem action='open'/><menuitem action='save'/><menuitem action='saveAs'/><separator/><menuitem action='quit'/></menu><menu action='Options'><menuitem action='WaitForDataSliceToDraw'/><menuitem action='AllowSlicesToBeSkipped'/></menu></menubar></ui>");
-            this.menubar1 = ((Gtk.MenuBar)(w1.GetWidget("/menubar1")));
+            this.UIManager.AddUiFromString("<ui><menubar name='menubar1'><menu name='Preset' action='Preset'><menu name='new' action='new'><menuitem name='LinearPreset' action='LinearPreset'/></menu><menuitem name='open' action='open'/><menuitem name='save' action='save'/><menuitem name='saveAs' action='saveAs'/><separator/><menuitem name='quit' action='quit'/></menu><menu name='Options' action='Options'><menuitem name='WaitForDataSliceToDraw' action='WaitForDataSliceToDraw'/><menuitem name='AllowSlicesToBeSkipped' action='AllowSlicesToBeSkipped'/></menu></menubar></ui>");
+            this.menubar1 = ((Gtk.MenuBar)(this.UIManager.GetWidget("/menubar1")));
             this.menubar1.Name = "menubar1";
             this.vbox1.Add(this.menubar1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox1[this.menubar1]));
-            w3.Position = 0;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox1[this.menubar1]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.PresetPane = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.PresetPane.Name = "PresetPane";
             this.vbox1.Add(this.PresetPane);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox1[this.PresetPane]));
-            w4.Position = 1;
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox1[this.PresetPane]));
+            w3.Position = 1;
             // Container child vbox1.Gtk.Box+BoxChild
             this.StatusBar = new Gtk.Statusbar();
             this.StatusBar.Name = "StatusBar";
             this.StatusBar.Spacing = 6;
             this.vbox1.Add(this.StatusBar);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox1[this.StatusBar]));
-            w5.Position = 2;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox1[this.StatusBar]));
+            w4.Position = 2;
+            w4.Expand = false;
+            w4.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

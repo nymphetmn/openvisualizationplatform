@@ -32,8 +32,6 @@ namespace OpenVP.GtkGui {
 		
 		private List<EffectMember> mMembers = new List<EffectMember>();
 		
-		private Tooltips mTooltips = new Tooltips();
-		
 		private List<MemberEditor> mEditors = new List<MemberEditor>();
 		
 		private List<MemberEditor> mDirtyEditors = new List<MemberEditor>();
@@ -114,7 +112,7 @@ namespace OpenVP.GtkGui {
 				this.mEditors.Add(editor);
 				
 				if (!string.IsNullOrEmpty(i.Description))
-					this.mTooltips.SetTip(editor, i.Description, null);
+					editor.TooltipText = i.Description;
 				
 				table.Attach(editor, 1, 2, row, ++row,
 				             editor.XAttachment, editor.YAttachment, 5, 5);
@@ -158,8 +156,6 @@ namespace OpenVP.GtkGui {
 		
 		protected override void OnDestroyed() {
 			base.OnDestroyed();
-			
-			this.mTooltips.Destroy();
 		}
 
 		protected virtual void OnApplyButtonClicked(object sender, System.EventArgs e) {

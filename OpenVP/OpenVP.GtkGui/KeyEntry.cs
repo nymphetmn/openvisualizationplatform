@@ -28,6 +28,8 @@ using Tao.Sdl;
 namespace OpenVP.GtkGui {
 	using GKey = Gdk.Key;
 	
+	[System.ComponentModel.Category("OpenVP.GtkGui")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class KeyEntry : Entry {
 		private static Dictionary<GKey, int> mKeyToSDLK =
 			new Dictionary<GKey, int>();
