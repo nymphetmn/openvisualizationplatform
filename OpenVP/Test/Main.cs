@@ -114,12 +114,13 @@ namespace Test {
 	public class TestTimedPreset : TimedPresetBase {
 		public TestTimedPreset() {
 			this.mClear.ClearColor = new Color(0, 0, 0, 0.075f);
-			this.mScope.Circular = true;
+			//this.mScope.Circular = true;
+			this.mScope.Vertices = 512;
 		}
 		
 		private ClearScreen mClear = new ClearScreen();
 		
-		private Scope mScope = new Scope();
+		private TestScope mScope = new TestScope();
 		
 		[Scene(0)]
 		protected void MainScene(IController controller) {
@@ -129,18 +130,36 @@ namespace Test {
 		
 		[Event(0)]
 		protected void MakeRed(IController controller) {
-			this.mScope.Color = new Color(1, 0, 0);
+			//this.mScope.Color = new Color(1, 0, 0);
 		}
 		
 		[Event(5)]
 		protected void MakeGreen(IController controller) {
-			this.mScope.Color = new Color(0, 1, 0);
+			//this.mScope.Color = new Color(0, 1, 0);
 		}
 		
 		[Event(10)]
 		protected void MakeBlue(IController controller) {
-			this.mScope.Color = new Color(0, 0, 1);
+			//this.mScope.Color = new Color(0, 0, 1);
 			this.mScope.LineWidth = 3;
+		}
+	}
+
+	public class TestScope : ScopeBase {
+		protected override void PlotVertex (ScopeData data)
+		{
+			data.Y = (float) Math.Sin(data.FractionalI * Math.PI) * data.Value;
+			data.X = 2 * data.FractionalI - 1;
+		}
+
+		public new float LineWidth {
+			get { return base.LineWidth; }
+			set { base.LineWidth = value; }
+		}
+
+		public new int Vertices {
+			get { return base.Vertices; }
+			set { base.Vertices = value; }
 		}
 	}
 }
