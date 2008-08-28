@@ -29,7 +29,7 @@ namespace OpenVP.Core {
 	[Serializable, DisplayName("Dynamic movement"), Category("Transform"),
 	 Description("Applies a movement function to the buffer."),
 	 Author("Chris Howie")]
-	public class DynamicMovement : Effect {
+	public class DynamicMovement : MovementBase {
 		private AffeScript mInitScript = new AffeScript();
 		
 		[Browsable(true), DisplayName("Init"),
@@ -80,53 +80,27 @@ namespace OpenVP.Core {
 		[NonSerialized]
 		private ScriptHost mScriptHost;
 		
-		private int mXResolution = 16;
-		
 		[Browsable(true), DisplayName("X"), Category("Grid resolution"),
 		 Range(2, 512),
 		 Description("The number of verticies along the X axis.")]
-		public int XResolution {
-			get {
-				return this.mXResolution;
-			}
-			set {
-				if (value < 2)
-					throw new ArgumentOutOfRangeException("value < 2");
-				
-				this.mXResolution = value;
-				this.CreatePointDataArray();
-			}
+		public new int XResolution {
+			get { return base.XResolution; }
+			set { base.XResolution = value; }
 		}
-		
-		private int mYResolution = 16;
 		
 		[Browsable(true), DisplayName("Y"), Category("Grid resolution"),
 		 Range(2, 512),
 		 Description("The number of verticies along the Y axis.")]
-		public int YResolution {
-			get {
-				return this.mYResolution;
-			}
-			set {
-				if (value < 2)
-					throw new ArgumentOutOfRangeException("value < 2");
-				
-				this.mYResolution = value;
-				this.CreatePointDataArray();
-			}
+		public new int YResolution {
+            get { return base.YResolution; }
+            set { base.YResolution = value; }
 		}
-		
-		private bool mWrap = true;
 		
 		[Browsable(true), DisplayName("Wrap"), Category("Miscellaneous"),
 		 Description("Whether to wrap when the scripts compute points that are off the screen.")]
-		public bool Wrap {
-			get {
-				return this.mWrap;
-			}
-			set {
-				this.mWrap = value;
-			}
+		public new bool Wrap {
+			get { return base.Wrap; }
+			set { base.Wrap = value; }
 		}
 		
 		private bool mRectangular = false;
@@ -139,28 +113,16 @@ namespace OpenVP.Core {
 			}
 			set {
 				this.mRectangular = value;
-				this.mStaticDirty = true;
+                this.MakeStaticDirty();
 			}
 		}
-		
-		private bool mStatic = false;
 		
 		[Browsable(true), DisplayName("Static motion"), Category("Miscellaneous"),
 		 Description("Whether the motion can change over time (off) or is static (on).")]
-		public bool Static {
-			get {
-				return this.mStatic;
-			}
-			set {
-				this.mStatic = value;
-			}
+		public new bool Static {
+			get { return base.Static; }
+			set { base.Static = value; }
 		}
-		
-		[NonSerialized]
-		private bool mStaticDirty = true;
-		
-		[NonSerialized]
-		private PointData[,] mPointData;
 		
 		public DynamicMovement() {
 			this.InitializeScriptObjects();
@@ -170,12 +132,6 @@ namespace OpenVP.Core {
             base.OnDeserialization(sender);
             
 			this.InitializeScriptObjects();
-		}
-		
-		private void CreatePointDataArray() {
-			this.mPointData = new PointData[this.mXResolution,
-			                                this.mYResolution];
-			this.mStaticDirty = true;
 		}
 		
 		private void InitializeScriptObjects() {
@@ -199,22 +155,20 @@ namespace OpenVP.Core {
 			this.mVertexScript.TargetObject = this.mScriptHost;
 			
 			this.mNeedInit = true;
-			this.mStaticDirty = true;
+            this.MakeStaticDirty();
 			
 			this.mInitScript.MadeDirty += this.OnInitMadeDirty;
 			this.mFrameScript.MadeDirty += this.OnOtherMadeDirty;
 			this.mVertexScript.MadeDirty += this.OnOtherMadeDirty;
-			
-			this.CreatePointDataArray();
 		}
 		
 		private void OnInitMadeDirty(object o, EventArgs e) {
 			this.mNeedInit = true;
-			this.mStaticDirty = true;
+            this.MakeStaticDirty();
 		}
 		
 		private void OnOtherMadeDirty(object o, EventArgs e) {
-			this.mStaticDirty = true;
+			this.MakeStaticDirty();
 		}
 		
 		private static bool RunScript(UserScript script, string type) {
@@ -232,149 +186,42 @@ namespace OpenVP.Core {
 			
 			return true;
 		}
-		
-		public override void NextFrame(IController controller) {
-			if (this.mNeedInit) {
-				this.mNeedInit = false;
-				RunScript(this.InitScript, "initialization");
-			}
-			
-			if (!this.mStatic || this.mStaticDirty) {
-				RunScript(this.FrameScript, "frame");
-				
-				if (controller.BeatDetector.IsBeat)
-					RunScript(this.BeatScript, "beat");
-			}
-		}
-		
-		public override void RenderFrame(IController controller) {
-			Gl.glMatrixMode(Gl.GL_PROJECTION);
-			Gl.glPushMatrix();
-			Gl.glLoadIdentity();
-			
-			Gl.glPushAttrib(Gl.GL_ENABLE_BIT);
-			Gl.glEnable(Gl.GL_TEXTURE_2D);
-			Gl.glDisable(Gl.GL_DEPTH_TEST);
-			Gl.glTexEnvf(Gl.GL_TEXTURE_ENV, Gl.GL_TEXTURE_ENV_MODE, Gl.GL_DECAL);
-			
-			this.mTexture.SetTextureSize(controller.Width,
-			                             controller.Height);
-			
-			Gl.glBindTexture(Gl.GL_TEXTURE_2D, this.mTexture.TextureId);
-			
-			Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S,
-			                   this.Wrap ? Gl.GL_REPEAT : Gl.GL_CLAMP);
-			
-			Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T,
-			                   this.Wrap ? Gl.GL_REPEAT : Gl.GL_CLAMP);
-			
-			Gl.glCopyTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB, 0, 0,
-			                    controller.Width, controller.Height, 0);
-			
-			PointData pd;
-			
-			if (!this.mStatic || this.mStaticDirty) {
-				for (int yi = 0; yi < this.YResolution; yi++) {
-					for (int xi = 0; xi < this.XResolution; xi++) {
-						this.mScriptHost.XI = (float) xi / (this.XResolution - 1);
-						this.mScriptHost.YI = (float) yi / (this.YResolution - 1);
-						this.mScriptHost.X = this.mScriptHost.XI;
-						this.mScriptHost.Y = this.mScriptHost.YI;
-						
-						float xp = this.mScriptHost.X * 2 - 1;
-						float yp = this.mScriptHost.Y * 2 - 1;
-						
-						this.mScriptHost.D = (float) Math.Sqrt((xp * xp) + (yp * yp));
-						this.mScriptHost.R = (float) Math.Atan2(yp, xp);
-						
-						if (!RunScript(this.VertexScript, "vertex")) {
-							// Force breaking out of the outer loop too.
-							yi = this.YResolution;
-							break;
-						}
-						
-						if (this.Rectangular) {
-							pd.XOffset = this.mScriptHost.X;
-							pd.YOffset = this.mScriptHost.Y;
-						} else {
-							pd.XOffset = (this.mScriptHost.D * (float) Math.Cos(this.mScriptHost.R) + 1) / 2;
-							pd.YOffset = (this.mScriptHost.D * (float) Math.Sin(this.mScriptHost.R) + 1) / 2;
-						}
-						
-						pd.Alpha = this.mScriptHost.Alpha;
-						
-						this.mPointData[xi, yi] = pd;
-					}
-				}
-				
-				this.mStaticDirty = false;
-			}
-			
-			Gl.glColor4f(1, 1, 1, 1);
-			Gl.glBegin(Gl.GL_QUADS);
-			
-			for (int yi = 0; yi < this.YResolution - 1; yi++) {
-				for (int xi = 0; xi < this.XResolution - 1; xi++) {
-					this.RenderVertex(xi,     yi    );
-					this.RenderVertex(xi + 1, yi    );
-					this.RenderVertex(xi + 1, yi + 1);
-					this.RenderVertex(xi,     yi + 1);
-				}
-			}
-			
-			Gl.glEnd();
-			
-			Gl.glPopAttrib();
-			
-			Gl.glPopMatrix();
-		}
-		
-		private void RenderVertex(int x, int y) {
-			PointData pd = this.mPointData[x, y];
-			
-			Gl.glColor4f(1, 1, 1, pd.Alpha);
-			
-			Gl.glTexCoord2f(pd.XOffset, pd.YOffset);
-			
-			Gl.glVertex2f((float) x / (this.XResolution - 1) * 2 - 1,
-						  (float) y / (this.YResolution - 1) * 2 - 1);
-		}
-		
-		public override void Dispose() {
-			if (mHasTextureRef) {
-				mHasTextureRef = false;
-				mTextureHandle.RemoveReference();
-			}
-		}
-		
-		~DynamicMovement() {
-			this.Dispose();
-		}
-		
-		[NonSerialized]
-		private bool mHasTextureRef = false;
-		
-		private TextureHandle mTexture {
-			get {
-				if (!this.mHasTextureRef) {
-					this.mHasTextureRef = true;
-					
-					mTextureHandle.AddReference();
-				}
-				
-				return mTextureHandle;
-			}
-		}
-		
-		private static SharedTextureHandle mTextureHandle = new SharedTextureHandle();
-		
-		private struct PointData {
-			public float XOffset;
-			
-			public float YOffset;
-			
-			public float Alpha;
-		}
+
+        protected override void OnRenderFrame() {
+            if (this.mNeedInit) {
+                this.mNeedInit = false;
+                RunScript(this.InitScript, "initialization");
+            }
+
+            RunScript(this.FrameScript, "frame");
+        }
+
+        protected override void OnBeat() {
+            RunScript(this.BeatScript, "beat");
+        }
+
+        protected override void PlotVertex(MovementData data) {
+            this.mScriptHost.X = data.X;
+            this.mScriptHost.XI = data.X;
+            this.mScriptHost.Y = data.Y;
+            this.mScriptHost.YI = data.Y;
+            this.mScriptHost.D = data.Distance;
+            this.mScriptHost.R = data.Rotation;
+
+            data.Method = this.Rectangular ? MovementMethod.Rectangular : MovementMethod.Polar;
+
+            if (RunScript(this.VertexScript, "vertex")) {
+                if (this.Rectangular) {
+                    data.X = this.mScriptHost.X;
+                    data.Y = this.mScriptHost.Y;
+                } else {
+                    data.Distance = this.mScriptHost.D;
+                    data.Rotation = this.mScriptHost.R;
+                }
+
+                data.Alpha = this.mScriptHost.Alpha;
+            }
+        }
 		
 		[Serializable]
 		private class ScriptHost : ISerializable {

@@ -1,3 +1,12 @@
+2008-08-28  Chris Howie <cdhowie@gmail.com> 
+
+	* MovementBase.cs: Overhaul to cache expensive operations (like
+	  conversion from rectangular to polar coordinates), use VBO if
+	  available for vertex and geometry indicies, and fall back on vertex
+	  arrays if unavailable.
+	* DynamicMovement.cs: Inherit from MovementBase instead to unify all
+	  movement code.
+
 2008-08-24  Chris Howie <cdhowie@gmail.com> 
 
 	* MovementBase.cs: Remove unnecessary field set.

@@ -83,9 +83,6 @@ namespace OpenVP.Core {
 		[NonSerialized]
 		private bool mStaticDirty = true;
 		
-		[NonSerialized]
-		private PointData[,] mPointData;
-		
 		public MovementBase() {
 			this.CreatePointDataArray();
 		}
@@ -97,9 +94,9 @@ namespace OpenVP.Core {
 		}
 		
 		private void CreatePointDataArray() {
-			this.mPointData = new PointData[this.mXResolution,
-			                                this.mYResolution];
-			this.mStaticDirty = true;
+            this.MakeStaticDirty();
+
+            this.UpdateCaches();
 		}
 		
 		protected void MakeStaticDirty() {
@@ -122,8 +119,123 @@ namespace OpenVP.Core {
 					this.OnBeat();
 			}
 		}
+
+        private struct ValueCache {
+            public float X;
+            public float Y;
+            public float XP;
+            public float YP;
+            public float Distance;
+            public float Rotation;
+        }
+        
+        [NonSerialized]
+        private ValueCache[] mCache = null;
+
+        [NonSerialized]
+        private float[] mVertexCache = null;
+
+        [NonSerialized]
+        private int mVertexVBO = -1;
+
+        [NonSerialized]
+        private float[] mTexCoordCache = null;
+
+        [NonSerialized]
+        private uint[] mIndexCache = null;
+
+        [NonSerialized]
+        private int mIndexVBOSize = 0;
+
+        [NonSerialized]
+        private int mIndexVBO = -1;
+        
+        private void UpdateCaches() {
+            this.mCache = new ValueCache[this.XResolution * this.YResolution];
+            
+            this.mVertexCache = new float[this.XResolution * this.YResolution * 2];
+            this.mTexCoordCache = new float[this.XResolution * this.YResolution * 2];
+
+            int i = 0;
+            int vi = 0;
+            
+            for (int yi = 0; yi < this.YResolution; yi++) {
+                for (int xi = 0; xi < this.XResolution; xi++) {
+                    ValueCache cache;
+
+                    cache.X = (float) xi / (this.XResolution - 1);
+					cache.Y = (float) yi / (this.YResolution - 1);
+					
+					cache.XP = cache.X * 2 - 1;
+					cache.YP = cache.Y * 2 - 1;
+
+                    float xp = cache.XP;
+                    float yp = cache.YP;
+
+                    cache.Distance = (float) Math.Sqrt((xp * xp) + (yp * yp));
+				    cache.Rotation = (float) Math.Atan2(yp, xp);
+
+                    this.mCache[i++] = cache;
+                    
+                    this.mVertexCache[vi++] = xp;
+                    this.mVertexCache[vi++] = yp;
+                }
+            }
+
+            this.mIndexCache = new uint[(this.XResolution - 1) *
+                                        (this.YResolution - 1) * 4];
+
+            i = 0;
+            uint ii = 0;
+            uint ii2 = checked((uint) this.YResolution);
+            
+            for (int yi = 0; yi < this.YResolution - 1; yi++) {
+                for (int xi = 0; xi < this.XResolution - 1; xi++) {
+                    this.mIndexCache[i++] = ii;
+                    this.mIndexCache[i++] = ++ii;
+                    this.mIndexCache[i++] = ii2 + 1;
+                    this.mIndexCache[i++] = ii2++;
+                }
+
+                ++ii;
+                ++ii2;
+            }
+
+            /* Console.WriteLine("--- Index cache for {0} x {1} ---", this.XResolution, this.YResolution);
+
+            try {
+            for (i = 0; i < this.mIndexCache.Length; i += 4) {
+                Console.WriteLine("{0},{1},{2},{3} ({4},{5}) ({6},{7}) ({8},{9}) ({10},{11})",
+                                  this.mIndexCache[i],
+                                  this.mIndexCache[i + 1],
+                                  this.mIndexCache[i + 2],
+                                  this.mIndexCache[i + 3],
+
+                                  this.mVertexCache[this.mIndexCache[i] * 2],
+                                  this.mVertexCache[this.mIndexCache[i] * 2 + 1],
+
+                                  this.mVertexCache[this.mIndexCache[i + 1] * 2],
+                                  this.mVertexCache[this.mIndexCache[i + 1] * 2 + 1],
+
+                                  this.mVertexCache[this.mIndexCache[i + 2] * 2],
+                                  this.mVertexCache[this.mIndexCache[i + 2] * 2 + 1],
+
+                                  this.mVertexCache[this.mIndexCache[i + 3] * 2],
+                                  this.mVertexCache[this.mIndexCache[i + 3] * 2 + 1]
+                                  );
+            }
+            } catch (IndexOutOfRangeException) {
+                Console.WriteLine("FAIL");
+            } */
+        }
+
+        [NonSerialized]
+        private bool? haveVBO = null;
 		
 		public override void RenderFrame(IController controller) {
+            if (this.haveVBO == null)
+                this.haveVBO = Gl.IsExtensionSupported("GL_ARB_vertex_buffer_object");
+            
 			Gl.glMatrixMode(Gl.GL_PROJECTION);
 			Gl.glPushMatrix();
 			Gl.glLoadIdentity();
@@ -147,69 +259,115 @@ namespace OpenVP.Core {
 			Gl.glCopyTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB, 0, 0,
 			                    controller.Width, controller.Height, 0);
 			
-			PointData pd;
-			
 			MovementData data = new MovementData();
 			
 			if (!this.mStatic || this.mStaticDirty) {
+                int cachei = 0;
+                int texi = 0;
+                
 				for (int yi = 0; yi < this.YResolution; yi++) {
 					for (int xi = 0; xi < this.XResolution; xi++) {
-						data.X = (float) xi / (this.XResolution - 1);
-						data.Y = (float) yi / (this.YResolution - 1);
+                        ValueCache cache = this.mCache[cachei++];
+                        
+						data.X = cache.X;
+						data.Y = cache.Y;
 						
-						float xp = data.X * 2 - 1;
-						float yp = data.Y * 2 - 1;
-						
-						data.Distance = (float) Math.Sqrt((xp * xp) + (yp * yp));
-						data.Rotation = (float) Math.Atan2(yp, xp);
+						data.Distance = cache.Distance;
+						data.Rotation = cache.Rotation;
 						
 						this.PlotVertex(data);
+
+                        float xo, yo;
 						
 						if (data.Method == MovementMethod.Rectangular) {
-							pd.XOffset = data.X;
-							pd.YOffset = data.Y;
+							xo = data.X;
+							yo = data.Y;
 						} else {
-							pd.XOffset = (data.Distance * (float) Math.Cos(data.Rotation) + 1) / 2;
-							pd.YOffset = (data.Distance * (float) Math.Sin(data.Rotation) + 1) / 2;
+							xo = (data.Distance * (float) Math.Cos(data.Rotation) + 1) / 2;
+							yo = (data.Distance * (float) Math.Sin(data.Rotation) + 1) / 2;
 						}
 						
-						pd.Alpha = data.Alpha;
-						
-						this.mPointData[xi, yi] = pd;
+						//pd.Alpha = data.Alpha;
+
+                        this.mTexCoordCache[texi++] = xo;
+                        this.mTexCoordCache[texi++] = yo;
 					}
 				}
 				
 				this.mStaticDirty = false;
 			}
-			
+            
 			Gl.glColor4f(1, 1, 1, 1);
-			Gl.glBegin(Gl.GL_QUADS);
-			
-			for (int yi = 0; yi < this.YResolution - 1; yi++) {
-				for (int xi = 0; xi < this.XResolution - 1; xi++) {
-					this.RenderVertex(xi,     yi    );
-					this.RenderVertex(xi + 1, yi    );
-					this.RenderVertex(xi + 1, yi + 1);
-					this.RenderVertex(xi,     yi + 1);
-				}
-			}
-			
-			Gl.glEnd();
-			
+
+            if (this.haveVBO ?? false) {
+                if (this.mVertexCache != null) {
+                    if (this.mVertexVBO < 0) {
+                        Gl.glDeleteBuffersARB(1, ref this.mVertexVBO);
+                    }
+                    
+                    Gl.glGenBuffersARB(1, out this.mVertexVBO);
+                    Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER_ARB, this.mVertexVBO);
+                    Gl.glBufferDataARB(Gl.GL_ARRAY_BUFFER_ARB,
+                                       new IntPtr(this.mVertexCache.Length * 4),
+                                       this.mVertexCache,
+                                       Gl.GL_STATIC_DRAW_ARB);
+
+                    this.mVertexCache = null;
+                    
+                    Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER_ARB, 0);
+                }
+
+                if (this.mIndexCache != null) {
+                    if (this.mIndexVBO < 0) {
+                        Gl.glDeleteBuffersARB(1, ref this.mIndexVBO);
+                    }
+
+                    Gl.glGenBuffersARB(1, out this.mIndexVBO);
+                    Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER_ARB, this.mIndexVBO);
+                    Gl.glBufferDataARB(Gl.GL_ELEMENT_ARRAY_BUFFER_ARB,
+                                       new IntPtr(this.mIndexCache.Length * 4),
+                                       this.mIndexCache,
+                                       Gl.GL_STATIC_DRAW_ARB);
+
+                    this.mIndexVBOSize = this.mIndexCache.Length;
+                    
+                    this.mIndexCache = null;
+                }
+            }
+            
+            Gl.glEnableClientState(Gl.GL_VERTEX_ARRAY);
+            Gl.glEnableClientState(Gl.GL_TEXTURE_COORD_ARRAY);
+            
+            Gl.glTexCoordPointer(2, Gl.GL_FLOAT, 0, this.mTexCoordCache);
+
+            if (this.haveVBO ?? false) {
+                Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER_ARB, this.mVertexVBO);
+                Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER_ARB, this.mIndexVBO);
+                
+                Gl.glVertexPointer(2, Gl.GL_FLOAT, 0, IntPtr.Zero);
+
+                Gl.glDrawElements(Gl.GL_QUADS,
+                                  this.mIndexVBOSize,
+                                  Gl.GL_UNSIGNED_INT,
+                                  IntPtr.Zero);
+                
+                Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER_ARB, 0);
+                Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+            } else {
+                Gl.glVertexPointer(2, Gl.GL_FLOAT, 0, this.mVertexCache);
+                
+                Gl.glDrawElements(Gl.GL_QUADS,
+                                  this.mIndexCache.Length,
+                                  Gl.GL_UNSIGNED_INT,
+                                  this.mIndexCache);
+            }
+
+            Gl.glDisableClientState(Gl.GL_VERTEX_ARRAY);
+            Gl.glDisableClientState(Gl.GL_TEXTURE_COORD_ARRAY);
+            
 			Gl.glPopAttrib();
 			
 			Gl.glPopMatrix();
-		}
-		
-		private void RenderVertex(int x, int y) {
-			PointData pd = this.mPointData[x, y];
-			
-			Gl.glColor4f(1, 1, 1, pd.Alpha);
-			
-			Gl.glTexCoord2f(pd.XOffset, pd.YOffset);
-			
-			Gl.glVertex2f((float) x / (this.XResolution - 1) * 2 - 1,
-						  (float) y / (this.YResolution - 1) * 2 - 1);
 		}
 		
 		public override void Dispose() {
@@ -240,14 +398,6 @@ namespace OpenVP.Core {
 		}
 		
 		private static SharedTextureHandle mTextureHandle = new SharedTextureHandle();
-		
-		private struct PointData {
-			public float XOffset;
-			
-			public float YOffset;
-			
-			public float Alpha;
-		}
 		
 		public enum MovementMethod : byte {
 			Rectangular,
