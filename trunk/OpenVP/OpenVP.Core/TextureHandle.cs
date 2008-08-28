@@ -85,8 +85,8 @@ namespace OpenVP.Core {
 			
 			byte[] mData = new byte[size * size * 3];
 			
-			Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB, size, size, 0,
-			                Gl.GL_RGB, Gl.GL_UNSIGNED_BYTE, mData);
+			Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGBA, size, size, 0,
+			                Gl.GL_RGBA, Gl.GL_UNSIGNED_BYTE, mData);
 			
 			Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
 			Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);
