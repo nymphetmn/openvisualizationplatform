@@ -1,5 +1,10 @@
 2008-08-28  Chris Howie <cdhowie@gmail.com> 
 
+	* MovementBase.cs: Convert tabs to spaces.  Fix error that would cause
+	  all VBOs to be leaked on cache rebuild or object disposal.
+
+2008-08-28  Chris Howie <cdhowie@gmail.com> 
+
 	* MovementBase.cs: Overhaul to cache expensive operations (like
 	  conversion from rectangular to polar coordinates), use VBO if
 	  available for vertex and geometry indicies, and fall back on vertex

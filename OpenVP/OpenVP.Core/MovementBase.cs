@@ -26,99 +26,99 @@ using OpenVP.Metadata;
 using Tao.OpenGl;
 
 namespace OpenVP.Core {
-	[Serializable, Browsable(false)]
-	public abstract class MovementBase : Effect {
-		private int mXResolution = 16;
-		
-		protected virtual int XResolution {
-			get {
-				return this.mXResolution;
-			}
-			set {
-				if (value < 2)
-					throw new ArgumentOutOfRangeException("value < 2");
-				
-				this.mXResolution = value;
-				this.CreatePointDataArray();
-			}
-		}
-		
-		private int mYResolution = 16;
-		
-		protected virtual int YResolution {
-			get {
-				return this.mYResolution;
-			}
-			set {
-				if (value < 2)
-					throw new ArgumentOutOfRangeException("value < 2");
-				
-				this.mYResolution = value;
-				this.CreatePointDataArray();
-			}
-		}
-		
-		private bool mWrap = true;
-		
-		protected virtual bool Wrap {
-			get {
-				return this.mWrap;
-			}
-			set {
-				this.mWrap = value;
-			}
-		}
-		
-		private bool mStatic = false;
-		
-		protected virtual bool Static {
-			get {
-				return this.mStatic;
-			}
-			set {
-				this.mStatic = value;
-			}
-		}
-		
-		[NonSerialized]
-		private bool mStaticDirty = true;
-		
-		public MovementBase() {
-			this.CreatePointDataArray();
-		}
-		
-		protected override void OnDeserialization(object sender) {
+    [Serializable, Browsable(false)]
+    public abstract class MovementBase : Effect {
+        private int mXResolution = 16;
+        
+        protected virtual int XResolution {
+            get {
+                return this.mXResolution;
+            }
+            set {
+                if (value < 2)
+                    throw new ArgumentOutOfRangeException("value < 2");
+                
+                this.mXResolution = value;
+                this.CreatePointDataArray();
+            }
+        }
+        
+        private int mYResolution = 16;
+        
+        protected virtual int YResolution {
+            get {
+                return this.mYResolution;
+            }
+            set {
+                if (value < 2)
+                    throw new ArgumentOutOfRangeException("value < 2");
+                
+                this.mYResolution = value;
+                this.CreatePointDataArray();
+            }
+        }
+        
+        private bool mWrap = true;
+        
+        protected virtual bool Wrap {
+            get {
+                return this.mWrap;
+            }
+            set {
+                this.mWrap = value;
+            }
+        }
+        
+        private bool mStatic = false;
+        
+        protected virtual bool Static {
+            get {
+                return this.mStatic;
+            }
+            set {
+                this.mStatic = value;
+            }
+        }
+        
+        [NonSerialized]
+        private bool mStaticDirty = true;
+        
+        public MovementBase() {
+            this.CreatePointDataArray();
+        }
+        
+        protected override void OnDeserialization(object sender) {
             base.OnDeserialization(sender);
             
-			this.CreatePointDataArray();
-		}
-		
-		private void CreatePointDataArray() {
+            this.CreatePointDataArray();
+        }
+        
+        private void CreatePointDataArray() {
             this.MakeStaticDirty();
 
             this.UpdateCaches();
-		}
-		
-		protected void MakeStaticDirty() {
-			this.mStaticDirty = true;
-		}
-		
-		protected virtual void OnRenderFrame() {
-		}
-		
-		protected virtual void OnBeat() {
-		}
-		
-		protected abstract void PlotVertex(MovementData data);
-		
-		public override void NextFrame(IController controller) {
-			if (!this.mStatic || this.mStaticDirty) {
-				this.OnRenderFrame();
-				
-				if (controller.BeatDetector.IsBeat)
-					this.OnBeat();
-			}
-		}
+        }
+        
+        protected void MakeStaticDirty() {
+            this.mStaticDirty = true;
+        }
+        
+        protected virtual void OnRenderFrame() {
+        }
+        
+        protected virtual void OnBeat() {
+        }
+        
+        protected abstract void PlotVertex(MovementData data);
+        
+        public override void NextFrame(IController controller) {
+            if (!this.mStatic || this.mStaticDirty) {
+                this.OnRenderFrame();
+                
+                if (controller.BeatDetector.IsBeat)
+                    this.OnBeat();
+            }
+        }
 
         private struct ValueCache {
             public float X;
@@ -164,16 +164,16 @@ namespace OpenVP.Core {
                     ValueCache cache;
 
                     cache.X = (float) xi / (this.XResolution - 1);
-					cache.Y = (float) yi / (this.YResolution - 1);
-					
-					cache.XP = cache.X * 2 - 1;
-					cache.YP = cache.Y * 2 - 1;
+                    cache.Y = (float) yi / (this.YResolution - 1);
+                    
+                    cache.XP = cache.X * 2 - 1;
+                    cache.YP = cache.Y * 2 - 1;
 
                     float xp = cache.XP;
                     float yp = cache.YP;
 
                     cache.Distance = (float) Math.Sqrt((xp * xp) + (yp * yp));
-				    cache.Rotation = (float) Math.Atan2(yp, xp);
+                    cache.Rotation = (float) Math.Atan2(yp, xp);
 
                     this.mCache[i++] = cache;
                     
@@ -231,77 +231,77 @@ namespace OpenVP.Core {
 
         [NonSerialized]
         private bool? haveVBO = null;
-		
-		public override void RenderFrame(IController controller) {
+        
+        public override void RenderFrame(IController controller) {
             if (this.haveVBO == null)
                 this.haveVBO = Gl.IsExtensionSupported("GL_ARB_vertex_buffer_object");
             
-			Gl.glMatrixMode(Gl.GL_PROJECTION);
-			Gl.glPushMatrix();
-			Gl.glLoadIdentity();
-			
-			Gl.glPushAttrib(Gl.GL_ENABLE_BIT);
-			Gl.glEnable(Gl.GL_TEXTURE_2D);
-			Gl.glDisable(Gl.GL_DEPTH_TEST);
-			Gl.glTexEnvf(Gl.GL_TEXTURE_ENV, Gl.GL_TEXTURE_ENV_MODE, Gl.GL_DECAL);
-			
-			this.mTexture.SetTextureSize(controller.Width,
-			                             controller.Height);
-			
-			Gl.glBindTexture(Gl.GL_TEXTURE_2D, this.mTexture.TextureId);
-			
-			Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S,
-			                   this.Wrap ? Gl.GL_REPEAT : Gl.GL_CLAMP);
-			
-			Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T,
-			                   this.Wrap ? Gl.GL_REPEAT : Gl.GL_CLAMP);
-			
-			Gl.glCopyTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB, 0, 0,
-			                    controller.Width, controller.Height, 0);
-			
-			MovementData data = new MovementData();
-			
-			if (!this.mStatic || this.mStaticDirty) {
+            Gl.glMatrixMode(Gl.GL_PROJECTION);
+            Gl.glPushMatrix();
+            Gl.glLoadIdentity();
+            
+            Gl.glPushAttrib(Gl.GL_ENABLE_BIT);
+            Gl.glEnable(Gl.GL_TEXTURE_2D);
+            Gl.glDisable(Gl.GL_DEPTH_TEST);
+            Gl.glTexEnvf(Gl.GL_TEXTURE_ENV, Gl.GL_TEXTURE_ENV_MODE, Gl.GL_DECAL);
+            
+            this.mTexture.SetTextureSize(controller.Width,
+                                         controller.Height);
+            
+            Gl.glBindTexture(Gl.GL_TEXTURE_2D, this.mTexture.TextureId);
+            
+            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S,
+                               this.Wrap ? Gl.GL_REPEAT : Gl.GL_CLAMP);
+            
+            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T,
+                               this.Wrap ? Gl.GL_REPEAT : Gl.GL_CLAMP);
+            
+            Gl.glCopyTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB, 0, 0,
+                                controller.Width, controller.Height, 0);
+            
+            MovementData data = new MovementData();
+            
+            if (!this.mStatic || this.mStaticDirty) {
                 int cachei = 0;
                 int texi = 0;
                 
-				for (int yi = 0; yi < this.YResolution; yi++) {
-					for (int xi = 0; xi < this.XResolution; xi++) {
+                for (int yi = 0; yi < this.YResolution; yi++) {
+                    for (int xi = 0; xi < this.XResolution; xi++) {
                         ValueCache cache = this.mCache[cachei++];
                         
-						data.X = cache.X;
-						data.Y = cache.Y;
-						
-						data.Distance = cache.Distance;
-						data.Rotation = cache.Rotation;
-						
-						this.PlotVertex(data);
+                        data.X = cache.X;
+                        data.Y = cache.Y;
+                        
+                        data.Distance = cache.Distance;
+                        data.Rotation = cache.Rotation;
+                        
+                        this.PlotVertex(data);
 
                         float xo, yo;
-						
-						if (data.Method == MovementMethod.Rectangular) {
-							xo = data.X;
-							yo = data.Y;
-						} else {
-							xo = (data.Distance * (float) Math.Cos(data.Rotation) + 1) / 2;
-							yo = (data.Distance * (float) Math.Sin(data.Rotation) + 1) / 2;
-						}
-						
-						//pd.Alpha = data.Alpha;
+                        
+                        if (data.Method == MovementMethod.Rectangular) {
+                            xo = data.X;
+                            yo = data.Y;
+                        } else {
+                            xo = (data.Distance * (float) Math.Cos(data.Rotation) + 1) / 2;
+                            yo = (data.Distance * (float) Math.Sin(data.Rotation) + 1) / 2;
+                        }
+                        
+                        //pd.Alpha = data.Alpha;
 
                         this.mTexCoordCache[texi++] = xo;
                         this.mTexCoordCache[texi++] = yo;
-					}
-				}
-				
-				this.mStaticDirty = false;
-			}
+                    }
+                }
+                
+                this.mStaticDirty = false;
+            }
             
-			Gl.glColor4f(1, 1, 1, 1);
+            Gl.glColor4f(1, 1, 1, 1);
 
             if (this.haveVBO ?? false) {
                 if (this.mVertexCache != null) {
-                    if (this.mVertexVBO < 0) {
+                    if (this.mVertexVBO >= 0) {
                         Gl.glDeleteBuffersARB(1, ref this.mVertexVBO);
                     }
                     
@@ -318,7 +318,7 @@ namespace OpenVP.Core {
                 }
 
                 if (this.mIndexCache != null) {
-                    if (this.mIndexVBO < 0) {
+                    if (this.mIndexVBO >= 0) {
                         Gl.glDeleteBuffersARB(1, ref this.mIndexVBO);
                     }
 
@@ -365,90 +365,101 @@ namespace OpenVP.Core {
             Gl.glDisableClientState(Gl.GL_VERTEX_ARRAY);
             Gl.glDisableClientState(Gl.GL_TEXTURE_COORD_ARRAY);
             
-			Gl.glPopAttrib();
-			
-			Gl.glPopMatrix();
-		}
-		
-		public override void Dispose() {
-			if (mHasTextureRef) {
-				mHasTextureRef = false;
-				
-				mTextureHandle.RemoveReference();
-			}
-		}
-		
-		~MovementBase() {
-			this.Dispose();
-		}
-		
-		[NonSerialized]
-		private bool mHasTextureRef = false;
-		
-		private TextureHandle mTexture {
-			get {
-				if (!this.mHasTextureRef) {
-					this.mHasTextureRef = true;
-					
-					mTextureHandle.AddReference();
-				}
-				
-				return mTextureHandle;
-			}
-		}
-		
-		private static SharedTextureHandle mTextureHandle = new SharedTextureHandle();
-		
-		public enum MovementMethod : byte {
-			Rectangular,
-			Polar
-		}
-		
-		public class MovementData {
-			public MovementData() {
-			}
-			
-			private MovementMethod mMethod = MovementMethod.Rectangular;
-			
-			public MovementMethod Method {
-				get { return this.mMethod; }
-				set { this.mMethod = value; }
-			}
-			
-			private float mX;
-			
-			public float X {
-				get { return this.mX; }
-				set { this.mX = value; }
-			}
-			
-			private float mY;
-			
-			public float Y {
-				get { return this.mY; }
-				set { this.mY = value; }
-			}
-			
-			private float mAlpha = 1;
-			
-			public float Alpha {
-				get { return this.mAlpha; }
-				set { this.mAlpha = value; }
-			}
-			
-			private float mRotation;
-			
-			public float Rotation {
-				get { return this.mRotation; }
-				set { this.mRotation = value; }
-			}
-			
-			private float mDistance;
-			
-			public float Distance {
-				get { return this.mDistance; }
-				set { this.mDistance = value; }
-			}
-		}
-	}
+            Gl.glPopAttrib();
+            
+            Gl.glPopMatrix();
+        }
+        
+        public override void Dispose() {
+            if (mHasTextureRef) {
+                mHasTextureRef = false;
+                
+                mTextureHandle.RemoveReference();
+            }
+
+            if (this.mVertexVBO >= 0) {
+                Gl.glDeleteBuffersARB(1, ref this.mVertexVBO);
+                this.mVertexVBO = -1;
+            }
+
+            if (this.mIndexVBO >= 0) {
+                Gl.glDeleteBuffersARB(1, ref this.mIndexVBO);
+                this.mIndexVBO = -1;
+                this.mIndexVBOSize = 0;
+            }
+        }
+        
+        ~MovementBase() {
+            this.Dispose();
+        }
+        
+        [NonSerialized]
+        private bool mHasTextureRef = false;
+        
+        private TextureHandle mTexture {
+            get {
+                if (!this.mHasTextureRef) {
+                    this.mHasTextureRef = true;
+                    
+                    mTextureHandle.AddReference();
+                }
+                
+                return mTextureHandle;
+            }
+        }
+        
+        private static SharedTextureHandle mTextureHandle = new SharedTextureHandle();
+        
+        public enum MovementMethod : byte {
+            Rectangular,
+            Polar
+        }
+        
+        public class MovementData {
+            public MovementData() {
+            }
+            
+            private MovementMethod mMethod = MovementMethod.Rectangular;
+            
+            public MovementMethod Method {
+                get { return this.mMethod; }
+                set { this.mMethod = value; }
+            }
+            
+            private float mX;
+            
+            public float X {
+                get { return this.mX; }
+                set { this.mX = value; }
+            }
+            
+            private float mY;
+            
+            public float Y {
+                get { return this.mY; }
+                set { this.mY = value; }
+            }
+            
+            private float mAlpha = 1;
+            
+            public float Alpha {
+                get { return this.mAlpha; }
+                set { this.mAlpha = value; }
+            }
+            
+            private float mRotation;
+            
+            public float Rotation {
+                get { return this.mRotation; }
+                set { this.mRotation = value; }
+            }
+            
+            private float mDistance;
+            
+            public float Distance {
+                get { return this.mDistance; }
+                set { this.mDistance = value; }
+            }
+        }
+    }
 }
