@@ -1,3 +1,8 @@
+2008-10-10  Chris Howie <me@chrishowie.com> 
+
+	* ScopeBase.cs: Allow native length to be used if an explicit vertex
+	  count is not supplied.
+
 2008-08-28  Chris Howie <cdhowie@gmail.com> 
 
 	* MovementBase.cs: Convert tabs to spaces.  Fix error that would cause
