@@ -1,0 +1,21 @@
+2008-11-04  Chris Howie  <cdhowie@gmail.com>
+
+	* Event.cs:
+	* ChangeLog:
+	* Channel.cs:
+	* IChannel.cs:
+	* AssemblyInfo.cs:
+	* ChannelWindow.cs:
+	* MetadataObject.cs:
+	* MetadataManager.cs:
+	* OpenVP.Metadata.mdp:
+	* OpenVP.Metadata.Loose:
+	* OpenVP.Metadata.Formatters:
+	* OpenVP.Metadata.Loose/LooseArray.cs:
+	* OpenVP.Metadata.Loose/LooseObject.cs:
+	* OpenVP.Metadata.Loose/LooseNumber.cs:
+	* OpenVP.Metadata.Loose/LooseString.cs:
+	* OpenVP.Metadata.Loose/LooseDictionary.cs:
+	* OpenVP.Metadata.Formatters/JSONFormatter.cs: Add new OpenVP.Metadata
+	project.
+
