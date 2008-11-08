@@ -23,5 +23,18 @@ namespace OpenVP.Metadata.Loose
         {
             return float.NaN;
         }
+
+        // We need these here so we can assign a string/float/int directly to
+        // a LooseObject reference variable.  We defer to the conversions in
+        // derived classes directly to avoid duplicate code.
+        public static implicit operator LooseObject(string str)
+        {
+            return (LooseString) str;
+        }
+
+        public static implicit operator LooseObject(float f)
+        {
+            return (LooseNumber) f;
+        }
     }
 }

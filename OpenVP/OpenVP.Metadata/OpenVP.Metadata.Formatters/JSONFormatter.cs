@@ -6,6 +6,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Text;
 
 using OpenVP.Metadata.Loose;
@@ -14,6 +16,19 @@ namespace OpenVP.Metadata.Formatters
 {
     public static class JSONFormatter
     {
+        private static readonly Dictionary<char, char> stringCharMap;
+
+        static JSONFormatter()
+        {
+            stringCharMap = new Dictionary<char, char>();
+
+            stringCharMap['b'] = '\b';
+            stringCharMap['f'] = '\f';
+            stringCharMap['n'] = '\n';
+            stringCharMap['r'] = '\r';
+            stringCharMap['t'] = '\t';
+        }
+        
         public static string Serialize(LooseObject obj)
         {
             StringBuilder str = new StringBuilder();
@@ -94,6 +109,127 @@ namespace OpenVP.Metadata.Formatters
             }
             
             str.Append(']');
+        }
+
+        private static void EatWhitespace(TextReader reader)
+        {
+            int i;
+
+            while ((i = reader.Peek()) != -1 && !char.IsWhiteSpace((char) i))
+                reader.Read();
+        }
+
+        private static LooseObject DeserializeObject(TextReader reader)
+        {
+            EatWhitespace(reader);
+
+            int ci = reader.Peek();
+
+            if (ci == -1)
+                throw new ArgumentException("reader: Premature end of stream.");
+
+            char c = (char) ci;
+
+            switch (c) {
+            case '"':
+                return DeserializeString(reader);
+
+            case '[':
+                return DeserializeArray(reader);
+
+            case '{':
+                return DeserializeDictionary(reader);
+            }
+
+            // TODO: number/null/true/false
+        }
+
+        private static LooseDictionary DeserializeDictionary(TextReader reader)
+        {
+            if (reader.Read() != '{')
+                throw new ArgumentException("reader: Not a dictionary.");
+
+            for (;;) {
+                EatWhitespace(reader);
+            }
+        }
+
+        private static LooseArray DeserializeArray(TextReader reader)
+        {
+            if (reader.Read() != '[')
+                throw new ArgumentException("reader: Does not contain a serialized array.");
+
+            LooseArray array = new LooseArray();
+
+            bool first = true;
+            for (;;) {
+                EatWhitespace();
+
+                if (reader.Peek() == ']')
+                    break;
+
+                if (!first) {
+                    if (reader.Read() != ',')
+                        throw new ArgumentException("reader: Malformed array.");
+
+                    first = false;
+                }
+
+                array.Add(DeserializeObject(reader));
+            }
+
+            reader.Read();
+
+            return array;
+        }
+
+        private static LooseString DeserializeString(TextReader reader)
+        {
+            if (reader.Read() != '"')
+                throw new ArgumentException("reader: Does not represent a serialized string.");
+
+            StringBuilder sb = new StringBuilder();
+
+            bool slash = false;
+            
+            for (;;) {
+                int ci = reader.Read();
+
+                if (ci == -1)
+                    throw new ArgumentException("reader: Unterminated string.");
+
+                char c = (char) ci;
+
+                if (slash) {
+                    char esc;
+                    
+                    if (c == 'u') {
+                        char[] buffer = new char[4];
+                        if (reader.Read(buffer, 0, 4) != 4)
+                            throw new ArgumentException("reader: Unterminated string.");
+
+                        ushort cbuf;
+                        if (!ushort.TryParse(new string(buffer), NumberStyles.AllowHexSpecifier, null, out cbuf))
+                            throw new ArgumentException("reader: Invalid escape sequence.");
+
+                        sb.Append((char) cbuf);
+                    } else if (stringCharMap.TryGetValue(c, out esc)) {
+                        sb.Append(esc);
+                    } else {
+                        sb.Append(c);
+                    }
+                    
+                    slash = false;
+                } else if (c == '"') {
+                    break;
+                } else if (c == '\\') {
+                    slash = true;
+                } else {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
