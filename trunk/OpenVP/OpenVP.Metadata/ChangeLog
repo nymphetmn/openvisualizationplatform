@@ -1,3 +1,11 @@
+2008-11-08  Chris Howie  <cdhowie@gmail.com>
+
+	* OpenVP.Metadata.Formatters/JSONFormatter.cs: Begin work on
+	deserializer.
+
+	* OpenVP.Metadata.Loose/LooseObject.cs: Add implicit casts from string
+	and float.
+
 2008-11-04  Chris Howie  <cdhowie@gmail.com>
 
 	* Event.cs:
