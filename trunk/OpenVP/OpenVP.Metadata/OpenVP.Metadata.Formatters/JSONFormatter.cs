@@ -119,6 +119,24 @@ namespace OpenVP.Metadata.Formatters
                 reader.Read();
         }
 
+        private static string ReadKeyword(TextReader reader)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int ci;
+            while ((ci = reader.Peek()) != -1) {
+                char c = (char) ci;
+
+                if (!char.IsLetter(c))
+                    break;
+
+                sb.Append(c);
+                reader.Read();
+            }
+
+            return sb.ToString();
+        }
+
         private static LooseObject DeserializeObject(TextReader reader)
         {
             EatWhitespace(reader);
@@ -141,7 +159,25 @@ namespace OpenVP.Metadata.Formatters
                 return DeserializeDictionary(reader);
             }
 
-            // TODO: number/null/true/false
+            if (char.IsLetter(c)) {
+                string keyword = ReadKeyword(reader);
+
+                switch (keyword) {
+                case "null":
+                    return null;
+
+                case "true":
+                    return 1;
+
+                case "false":
+                    return 0;
+                }
+                
+                throw new ArgumentException("Encountered unrecognized keyword: " + keyword);
+            }
+
+            // TODO: number
+            throw new NotImplementedException("Number parsing.");
         }
 
         private static LooseDictionary DeserializeDictionary(TextReader reader)
@@ -163,7 +199,7 @@ namespace OpenVP.Metadata.Formatters
 
             bool first = true;
             for (;;) {
-                EatWhitespace();
+                EatWhitespace(reader);
 
                 if (reader.Peek() == ']')
                     break;

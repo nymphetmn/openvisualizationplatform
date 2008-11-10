@@ -1,3 +1,10 @@
+2008-11-10  Chris Howie  <cdhowie@gmail.com>
+
+	* OpenVP.Metadata.Formatters/JSONFormatter.cs: Implement deserializing
+	of null/true/false.
+
+	* Channel.cs: Add abstract seek methods.
+
 2008-11-08  Chris Howie  <cdhowie@gmail.com>
 
 	* OpenVP.Metadata.Formatters/JSONFormatter.cs: Begin work on

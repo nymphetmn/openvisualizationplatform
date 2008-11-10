@@ -93,5 +93,9 @@ namespace OpenVP.Metadata
                 where (x.EndTime >= begin || x.BeginTime <= end)
                 select x;
         }
+
+        public abstract void SeekTo(int position);
+
+        public abstract void SeekAhead(int amount);
     }
 }
