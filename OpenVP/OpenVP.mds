@@ -4,7 +4,7 @@
       <Entry build="True" name="OpenVP" configuration="Debug" />
       <Entry build="True" name="Test" configuration="Debug" />
       <Entry build="True" name="OpenVP.Core" configuration="Debug" />
-      <Entry build="True" name="AudaciousUDPStub" configuration="Debug" />
+      <Entry build="False" name="AudaciousUDPStub" configuration="Debug" />
       <Entry build="True" name="OpenVP.GtkGui" configuration="Debug" />
       <Entry build="True" name="OpenVP.Scripting" configuration="Debug" />
       <Entry build="True" name="OpenVP.Metadata" configuration="Debug" />
@@ -13,7 +13,7 @@
       <Entry build="True" name="OpenVP" configuration="Release" />
       <Entry build="True" name="Test" configuration="Release" />
       <Entry build="True" name="OpenVP.Core" configuration="Release" />
-      <Entry build="True" name="AudaciousUDPStub" configuration="Release" />
+      <Entry build="False" name="AudaciousUDPStub" configuration="Release" />
       <Entry build="True" name="OpenVP.GtkGui" configuration="Release" />
       <Entry build="True" name="OpenVP.Scripting" configuration="Release" />
       <Entry build="True" name="OpenVP.Metadata" configuration="Release" />
@@ -28,6 +28,7 @@
     <Execute type="None" entry="OpenVP.Scripting" />
     <Execute type="None" entry="OpenVP.Metadata" />
   </StartMode>
+  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
     <Entry filename="OpenVP/OpenVP.mdp" />
     <Entry filename="Test/Test.mdp" />
