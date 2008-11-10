@@ -1,5 +1,14 @@
 2008-11-10  Chris Howie  <cdhowie@gmail.com>
 
+	* Channel.cs: Make GetEvents abstract and remove EventBuffer.
+
+	* StaticChannel.cs:
+	* OpenVP.Metadata.mdp: Add StaticChannel class.
+
+	* ChannelWindow.cs: Add GetEvents call for variable window size.
+
+2008-11-10  Chris Howie  <cdhowie@gmail.com>
+
 	* OpenVP.Metadata.Formatters/JSONFormatter.cs: Implement deserializing
 	of null/true/false.
 

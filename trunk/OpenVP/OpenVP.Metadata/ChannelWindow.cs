@@ -53,5 +53,13 @@ namespace OpenVP.Metadata
         {
             return this.Channel.GetEvents(this.WindowSize);
         }
+
+        public IEnumerable<T> GetEvents(int windowSize)
+        {
+            if (windowSize < 1 || windowSize > this.WindowSize)
+                throw new ArgumentOutOfRangeException("windowSize must be >= 1 and <= WindowSize");
+
+            return this.Channel.GetEvents(windowSize);
+        }
     }
 }

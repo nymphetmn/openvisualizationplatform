@@ -12,8 +12,6 @@ namespace OpenVP.Metadata
 {
     public abstract class Channel<T> : MetadataObject, IChannel where T : Event
     {
-        protected abstract IEnumerable<T> EventBuffer { get; }
-        
         public int Position { get; protected set; }
 
         private List<WeakReference> windows = new List<WeakReference>();
@@ -83,16 +81,7 @@ namespace OpenVP.Metadata
             }
         }
 
-        internal IEnumerable<T> GetEvents(int windowSize)
-        {
-            int begin = this.Position;
-            int end = this.Position + windowSize - 1;
-
-            return
-                from x in this.EventBuffer
-                where (x.EndTime >= begin || x.BeginTime <= end)
-                select x;
-        }
+        protected internal abstract IEnumerable<T> GetEvents(int windowSize);
 
         public abstract void SeekTo(int position);
 
