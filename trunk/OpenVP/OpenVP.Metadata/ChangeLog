@@ -1,5 +1,12 @@
 2008-11-10  Chris Howie  <cdhowie@gmail.com>
 
+	* Event.cs:
+	* OpenVP.Metadata.mdp:
+	* LooseSourceAttribute.cs: Add mechanism for specifying loose data paths
+	as attributes.
+
+2008-11-10  Chris Howie  <cdhowie@gmail.com>
+
 	* Channel.cs: Make GetEvents abstract and remove EventBuffer.
 
 	* StaticChannel.cs:
