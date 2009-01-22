@@ -1,0 +1,6 @@
+Name: OpenVP.Metadata
+Description: OpenVP.Metadata
+Version: 
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/OpenVP.Metadata.dll
