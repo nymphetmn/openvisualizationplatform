@@ -1,5 +1,5 @@
 #summary Directions for building Banshee.OpenVP and test with Banshee 1.4.2.
-#labels Phase-Deploy
+#labels Phase-Deploy,Draft
 
 = Directions for building Banshee =
 
