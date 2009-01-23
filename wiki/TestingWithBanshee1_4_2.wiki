@@ -1,0 +1,13 @@
+#summary Directions for building Banshee.OpenVP and test with Banshee 1.4.2.
+#labels Phase-Deploy
+
+= Directions for building Banshee =
+
+  # Obtain and extract the Banshee 1.4.2 source.
+  # Download and apply [http://bugzilla.gnome.org/attachment.cgi?id=127031 this patch] to the source.
+  # Build and install Banshee.
+  # Note the lib directory where Banshee was installed (usually /usr/local/lib/banshee-1).
+
+= Directions for building OpenVP =
+
+  # Check out the OpenVP-0.0.1 branch.  (`svn co http://openvisualizationplatform.googlecode.com/svn/branches/OpenVP-0.0.1`)
