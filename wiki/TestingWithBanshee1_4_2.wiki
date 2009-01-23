@@ -1,21 +1,25 @@
 #summary Directions for building Banshee.OpenVP to test with Banshee 1.4.2.
 #labels Phase-Deploy,Draft
 
-= Directions for building Banshee =
+= Building Banshee =
 
   # Obtain and extract the Banshee 1.4.2 source.
   # Download and apply [http://bugzilla.gnome.org/attachment.cgi?id=127031 this patch] to the source.
   # Build and install Banshee.
   # Note the lib directory where Banshee was installed (usually /usr/local/lib/banshee-1).  We will call this `$BANSHEE_LIBDIR` in the directions below.
 
-= Directions for building OpenVP =
+= Building OpenVP =
 
   # Check out the OpenVP-0.0.1 branch.  (`svn co http://openvisualizationplatform.googlecode.com/svn/branches/OpenVP-0.0.1`)
   # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root)
 
-= Directions for building Banshee.OpenVP =
+= Building Banshee.OpenVP =
 
   # Check out Banshee.OpenVP.  (`svn co http://openvisualizationplatform.googlecode.com/svn/trunk/Banshee.OpenVP`)
   # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root.)
+
+= Telling Banshee to use Banshee.OpenVP =
+
+Now everything is built and installed, but Banshee doesn't know that the Banshee.OpenVP addin exists.  The simplest way to fix this is to symlink Banshee.OpenVP and all of its dependencies into `$BANSHEE_LIBDIR`.
