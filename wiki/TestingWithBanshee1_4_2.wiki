@@ -11,11 +11,11 @@
 = Directions for building OpenVP =
 
   # Check out the OpenVP-0.0.1 branch.  (`svn co http://openvisualizationplatform.googlecode.com/svn/branches/OpenVP-0.0.1`)
-  # Build.  (`./configure && make`)
+  # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root)
 
 = Directions for building Banshee.OpenVP =
 
   # Check out Banshee.OpenVP.  (`svn co http://openvisualizationplatform.googlecode.com/svn/trunk/Banshee.OpenVP`)
-  # Build.  (`./configure && make`)
+  # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root.)
