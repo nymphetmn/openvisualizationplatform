@@ -13,13 +13,19 @@
   # Check out the OpenVP-0.0.1 branch.  (`svn co http://openvisualizationplatform.googlecode.com/svn/branches/OpenVP-0.0.1`)
   # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root)
+  # Note the lib directory where OpenVP was installed (usually /usr/local/lib/openvp).  We will call this `$OPENVP_LIBDIR` in the directions below.
 
 = Building Banshee.OpenVP =
 
   # Check out Banshee.OpenVP.  (`svn co http://openvisualizationplatform.googlecode.com/svn/trunk/Banshee.OpenVP`)
   # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root.)
+  # Note the lib directory where Banshee.OpenVP was installed (usually /usr/local/lib/banshee-openvp).  We will call this `$BANSHEE_OPENVP_LIBDIR` in the directions below.
 
 = Telling Banshee to use Banshee.OpenVP =
 
-Now everything is built and installed, but Banshee doesn't know that the Banshee.OpenVP addin exists.  The simplest way to fix this is to symlink Banshee.OpenVP and all of its dependencies into `$BANSHEE_LIBDIR`.
+Now everything is built and installed, but Banshee doesn't know that the Banshee.OpenVP addin exists.  The simplest way to fix this is to symlink Banshee.OpenVP and all of its dependencies into `$BANSHEE_LIBDIR` by running the command `ln -s $OPENVP_LIBDIR/*.dll $BANSHEE_OPENVP_LIBDIR/*.dll $BANSHEE_LIBDIR` using the information recorded from the above steps.
+
+= Run Banshee =
+
+At this point you should be all set.  Run `banshee-1` from a console and enjoy!
