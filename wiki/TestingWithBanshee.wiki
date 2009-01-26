@@ -5,7 +5,7 @@
 
   # Check out Banshee trunk.  (`svn co http://svn.gnome.org/svn/banshee/trunk/banshee`)
   # Download and apply [http://bugzilla.gnome.org/attachment.cgi?id=127031 this patch] to the source.  (`wget -O - http://bugzilla.gnome.org/attachment.cgi?id=127031 2>/dev/null | patch -p0`)
-  # Build and install Banshee.  Remember to run `./autogen.sh` first as the patch modifies the build system.
+  # Build and install Banshee.  Remember to run `./autogen.sh` first as the patch modifies the build system.  Also remember to `rm -fr /usr/local/lib/banshee-1` if you have installed Banshee from source before.
   # Note the lib directory where Banshee was installed (usually /usr/local/lib/banshee-1).  We will call this `$BANSHEE_LIBDIR` in the directions below.
 
 = Building OpenVP =
@@ -24,7 +24,7 @@
 
 = Telling Banshee to use Banshee.OpenVP =
 
-Now everything is built and installed, but Banshee doesn't know that the Banshee.OpenVP addin exists.  The simplest way to fix this is to symlink Banshee.OpenVP and all of its dependencies into `$BANSHEE_LIBDIR` by running the command `ln -s $OPENVP_LIBDIR/*.dll $BANSHEE_OPENVP_LIBDIR/*.dll $BANSHEE_LIBDIR` using the information recorded from the above steps.
+Now everything is built and installed, but Banshee doesn't know that the Banshee.OpenVP addin exists.  The simplest way to fix this is to symlink Banshee.OpenVP and all of its dependencies into `$BANSHEE_LIBDIR` by running the command `ln -s $OPENVP_LIBDIR/*.dll $BANSHEE_OPENVP_LIBDIR/*.dll $BANSHEE_LIBDIR` using the information recorded from the above steps.  Usually you can just run `ln -s /usr/local/lib/openvp/*.dll /usr/local/lib/banshee-openvp/*.dll /usr/local/lib/banshee-1/` if you have installed everything at the default locations.
 
 = Run Banshee =
 
