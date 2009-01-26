@@ -1,5 +1,5 @@
 #summary Directions for building Banshee.OpenVP to test with Banshee SVN trunk.
-#labels Phase-Deploy,Draft
+#labels Phase-Deploy
 
 = Building Banshee =
 
