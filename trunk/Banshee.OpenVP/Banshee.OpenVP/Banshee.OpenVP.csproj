@@ -55,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\Banshee.OpenVP.addin.xml" />
+    <EmbeddedResource Include="resources\greenflower.ovpb" />
+    <EmbeddedResource Include="resources\inferno.ovpb" />
+    <EmbeddedResource Include="resources\stargrid.ovpb" />
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
