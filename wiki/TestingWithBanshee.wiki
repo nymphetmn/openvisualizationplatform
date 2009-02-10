@@ -4,7 +4,7 @@
 = Building Banshee =
 
   # Check out Banshee trunk.  (`svn co http://svn.gnome.org/svn/banshee/trunk/banshee`)
-  # Download and apply [http://bugzilla.gnome.org/attachment.cgi?id=127230 this patch] to the source.  (`wget -O - http://bugzilla.gnome.org/attachment.cgi?id=127230 2>/dev/null | patch -p0`)
+  # Download and apply [http://bugzilla.gnome.org/attachment.cgi?id=128403 this patch] to the source.  (`wget -O - http://bugzilla.gnome.org/attachment.cgi?id=128403 2>/dev/null | patch -p0`).  Note that it is normal for the changes to ChangeLog to fail and will not cause any behavioral changes to Banshee.
   # Build and install Banshee.  Remember to run `./autogen.sh` first as the patch modifies the build system.  Also remember to `rm -fr /usr/local/lib/banshee-1` if you have installed Banshee from source before.
   # Note the lib directory where Banshee was installed (usually /usr/local/lib/banshee-1).  We will call this `$BANSHEE_LIBDIR` in the directions below.
 
