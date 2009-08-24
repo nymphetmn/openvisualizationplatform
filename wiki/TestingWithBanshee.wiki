@@ -12,14 +12,14 @@
 
 = Building OpenVP =
 
-  # Check out the OpenVP-0.0.1 branch.  (`svn co http://openvisualizationplatform.googlecode.com/svn/branches/OpenVP-0.0.1`)
+  # Check out the 0.0.1 branch of OpenVP.  (`git clone git://gitorious.org/openvp/openvp-mainline.git && cd openvp-mainline && git checkout -b 0.0.1 origin/0.0.1`)
   # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root)
   # Note the lib directory where OpenVP was installed (usually /usr/local/lib/openvp).  We will call this `$OPENVP_LIBDIR` in the directions below.
 
 = Building Banshee.OpenVP =
 
-  # Check out Banshee.OpenVP.  (`svn co http://openvisualizationplatform.googlecode.com/svn/trunk/Banshee.OpenVP`)
+  # Check out Banshee.OpenVP.  (`git clone git://gitorious.org/openvp/banshee-openvp.git && cd banshee-openvp`)
   # Build.  (`./autogen.sh && make`)
   # Install.  (`make install` as root.)
   # Note the lib directory where Banshee.OpenVP was installed (usually /usr/local/lib/banshee-openvp).  We will call this `$BANSHEE_OPENVP_LIBDIR` in the directions below.
