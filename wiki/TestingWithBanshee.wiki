@@ -6,7 +6,7 @@
 = Building Banshee =
 
   # Clone my Banshee git repository.  (`git clone git://gitorious.org/banshee/cdhowie-clone.git`)
-  # Check out the source-contents branch.  (`git checkout -b source-contents origin/source-contents`)
+  # Check out the now-playing-hijack branch.  (`git checkout -b now-playing-hijack origin/now-playing-hijack`)
   # Build and install Banshee.  Remember to run `./autogen.sh` first, and also to `rm -fr /usr/local/lib/banshee-1` if you have installed Banshee from source before.
   # Note the lib directory where Banshee was installed (usually /usr/local/lib/banshee-1).  We will call this `$BANSHEE_LIBDIR` in the directions below.
 
